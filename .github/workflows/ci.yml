@@ -1,0 +1,129 @@
+name: CI Pipeline
+ 
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+ 
+jobs:
+  # ---------------------------------------------------------------------------
+  # Job 1 — Lint
+  # ---------------------------------------------------------------------------
+  lint:
+    name: Lint Python Code
+    runs-on: ubuntu-latest
+ 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+ 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+ 
+      - name: Install ruff
+        run: pip install ruff
+ 
+      - name: Run ruff linter
+        run: ruff check extraction/ tests/
+ 
+      - name: Run ruff formatter check
+        run: ruff format --check extraction/ tests/
+ 
+  # ---------------------------------------------------------------------------
+  # Job 2 — Tests
+  # ---------------------------------------------------------------------------
+  test:
+    name: Run pytest
+    runs-on: ubuntu-latest
+    needs: lint
+ 
+    env:
+      FOOTBALL_API_TOKEN: dummy_token_for_tests
+      POSTGRES_USER: football
+      POSTGRES_PASSWORD: football123
+      POSTGRES_DB: football_db
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+ 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+ 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+ 
+      - name: Install dependencies
+        run: pip install -r requirements.txt pytest
+ 
+      - name: Run tests
+        run: pytest tests/ -v --tb=short
+ 
+  # ---------------------------------------------------------------------------
+  # Job 3 — dbt compile
+  # ---------------------------------------------------------------------------
+  dbt_compile:
+    name: Validate dbt Models
+    runs-on: ubuntu-latest
+    needs: test
+ 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: football
+          POSTGRES_PASSWORD: football123
+          POSTGRES_DB: football_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+ 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+ 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+ 
+      - name: Install dbt
+        run: pip install dbt-postgres
+ 
+      - name: Create raw schema
+        run: |
+          PGPASSWORD=football123 psql -h localhost -U football -d football_db -f sql/init.sql
+ 
+      - name: Create dbt profiles.yml
+        run: |
+          mkdir -p ~/.dbt
+          cat <<EOF > ~/.dbt/profiles.yml
+          football_project:
+            target: dev
+            outputs:
+              dev:
+                type: postgres
+                host: localhost
+                port: 5432
+                user: football
+                password: football123
+                dbname: football_db
+                schema: dbt_dev
+                threads: 1
+          EOF
+ 
+      - name: Run dbt compile
+        working-directory: dbt/football_project
+        run: dbt compile
+ 
+      - name: Run dbt run
+        working-directory: dbt/football_project
+        run: dbt run

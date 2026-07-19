@@ -7,3 +7,7 @@ python-dotenv==1.0.1
 psycopg2-binary==2.9.9
 
 dbt-postgres==1.8.0
+
+pytest==8.2.0
+
+ruff==0.4.4
