@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  # ---------------------------------------------------------------------------
+  # Staging
+  # ---------------------------------------------------------------------------
+  - name: stg_matches
+    description: "Cleaned and typed match data"
+    columns:
+      - name: match_id
+        description: "Unique match identifier"
+        tests:
+          - unique
+          - not_null
+      - name: competition_code
+        tests:
+          - not_null
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['SCHEDULED', 'LIVE', 'IN_PLAY', 'PAUSED', 'FINISHED', 'POSTPONED', 'CANCELLED', 'SUSPENDED', 'TIMED']
+
+  - name: stg_teams
+    description: "Cleaned team data"
+    columns:
+      - name: team_id
+        description: "Unique team identifier"
+        tests:
+          - unique
+          - not_null
+      - name: team_name
+        tests:
+          - not_null
+
+  - name: stg_standings
+    description: "Cleaned standings data"
+    columns:
+      - name: standing_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_scorers
+    description: "Cleaned top scorers data"
+    columns:
+      - name: scorer_id
+        tests:
+          - unique
+          - not_null
+      - name: goals
+        tests:
+          - not_null
+
+  

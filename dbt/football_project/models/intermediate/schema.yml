@@ -1,0 +1,21 @@
+version: 2
+
+models:
+
+  # ---------------------------------------------------------------------------
+  # Intermediate
+  # ---------------------------------------------------------------------------
+  - name: int_team_match_results
+    description: "One row per team per match — unpivoted from stg_matches"
+    columns:
+      - name: team_id
+        tests:
+          - not_null
+      - name: result
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['WIN', 'DRAW', 'LOSS']
+      - name: points_earned
+        tests:
+          - not_null

@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: "Raw data loaded directly from football-data.org API"
+    tables:
+      - name: matches
+        description: "All matches from the API"
+      - name: teams
+        description: "All teams from the API"
+      - name: standings
+        description: "Competition standings from the API"
+      - name: scorers
+        description: "Top scorers from the API"

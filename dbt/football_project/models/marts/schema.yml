@@ -1,0 +1,25 @@
+version: 2
+
+models:
+
+  # ---------------------------------------------------------------------------
+  # Marts
+  # ---------------------------------------------------------------------------
+  - name: fct_matches
+    description: "Final fact table for matches enriched with team details"
+    columns:
+      - name: match_id
+        tests:
+          - unique
+          - not_null
+
+  - name: mart_world_cup_summary
+    description: "Aggregated World Cup performance per team"
+    columns:
+      - name: team_id
+        tests:
+          - unique
+          - not_null
+      - name: total_points
+        tests:
+          - not_null
