@@ -227,8 +227,8 @@ AIRFLOW_UID=50000
 
 ## 👤 Author
 
-**Your Name**
-[LinkedIn](https://linkedin.com/in/yourprofile) · [GitHub](https://github.com/yourusername)
+**Rodrigo Cavote**
+[LinkedIn](https://www.linkedin.com/in/rodrigo-cavote/) · [GitHub](https://github.com/rodcal)
 
 ---
 
