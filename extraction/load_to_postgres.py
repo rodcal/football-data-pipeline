@@ -241,9 +241,9 @@ def load_scorers(conn, data: dict, competition_code: str) -> int:
             s.get("player", {}).get("nationality"),
             s.get("team", {}).get("id"),
             s.get("team", {}).get("name"),
-            s.get("goals"),
-            s.get("assists"),
-            s.get("penalties"),
+            s.get("goals") or 0,
+            s.get("assists") or 0,
+            s.get("penalties") or 0,
             json.dumps(s),
         ))
  
